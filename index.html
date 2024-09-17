@@ -16,20 +16,57 @@
     require([
      "esri/config",
       "esri/Map",
-      "esri/views/MapView"
+      "esri/views/MapView",
+      "esri/widgets/BasemapGallery", // 导入 BasemapGallery 模块
+      "esri/widgets/Expand",
+      "esri/widgets/Locate",
+      "esri/widgets/Search"  // 引入 Search 模块 // 可选：导入 Expand 模块，让 BasemapGallery 折叠显示
     ], function (esriConfig,Map, MapView) {
 
       esriConfig.apiKey = "AAPK2cb19acc98eb406b80346e85af5aa1ffagWp07_WJVQlFAY2XL6xGrQ86USz9K6UzB1OaBd37PTIlYdHTo04S0-F9ETbr-dC";
       const map = new Map({
-        basemap: "streets" // Basemap layer
+        basemap: "hybrid" // Basemap layer
       });
 
       const view = new MapView({
           map: map,
-          center: [2.3522, 48.8566], // Longitude, latitude
-          zoom: 500, // Zoom level
+          center: [-89.3838, 43.0722], // Longitude, latitude
+          zoom: 15, // Zoom level
           container: "viewDiv" // Div element
         });
+        
+              // 创建 BasemapGallery 小部件
+      const basemapGallery = new BasemapGallery({
+        view: view
+      });
+
+      // 可选：使用 Expand 小部件将 BasemapGallery 折叠显示
+      const bgExpand = new Expand({
+        view: view,
+        content: basemapGallery // BasemapGallery 小部件内容
+      });
+
+      // 将 BasemapGallery 小部件添加到地图视图的 UI 中
+      view.ui.add(bgExpand, "top-right"); // 在右上角显示 BasemapGallery
+      const locate = new Locate({
+        view: view,  // 将视图与 Locate 小部件关联
+        useHeadingEnabled: false, // 禁用罗盘指向
+        goToOverride: function(view, options) {
+          options.target.scale = 1500;  // 设置定位时的缩放比例
+          return view.goTo(options.target);
+        }
+      });
+
+      // 将 Locate 小部件添加到视图的顶部左侧
+      view.ui.add(locate, "top-left");
+      // 创建搜索栏并将其添加到视图中
+      const search = new Search({
+        view: view  // 将视图与 Search 小部件关联
+      });
+
+      // 将 Search 小部件添加到视图的顶部右侧
+      view.ui.add(search, "top-right");
+    
         
     });
   </script>
